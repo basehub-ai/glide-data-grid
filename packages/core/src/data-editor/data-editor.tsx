@@ -200,7 +200,9 @@ function shiftSelection(input: GridSelection, offset: number): GridSelection {
 /**
  * @category DataEditor
  */
-export interface DataEditorProps extends Props, Pick<DataGridSearchProps, "imageWindowLoader"> {
+export interface DataEditorProps
+    extends Props,
+        Pick<DataGridSearchProps, "imageWindowLoader" | "scrollOffsetTop" | "scrollerRef"> {
     /** Emitted whenever the user has requested the deletion of the selection.
      * @group Editing
      */
@@ -4019,6 +4021,8 @@ const DataEditorImpl: React.ForwardRefRenderFunction<DataEditorRef, DataEditorPr
                 inWidth={width ?? idealWidth}
                 inHeight={height ?? idealHeight}>
                 <DataGridSearch
+                    scrollerRef={p.scrollerRef}
+                    scrollOffsetTop={p.scrollOffsetTop}
                     fillHandle={fillHandle}
                     drawFocusRing={drawFocusRing}
                     experimental={experimental}

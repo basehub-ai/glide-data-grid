@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { DataEditorAll as DataEditor } from "../../data-editor-all.js";
 import {
     BeautifulWrapper,
@@ -34,18 +34,64 @@ interface AddColumnsProps {
     columnsCount: number;
 }
 
+const rowCount = 10_000;
+
 export const AddColumns: React.FC<AddColumnsProps> = p => {
     const { cols, getCellContent } = useMockDataGenerator(p.columnsCount);
+    const scrollerRef = useRef<HTMLDivElement>(null);
+    const [scrollOffsetTop, setScrollOffsetTop] = useState(0);
+    const headerRef = useRef<HTMLElement>(null);
+
+    useEffect(() => {
+        setScrollOffsetTop(headerRef.current?.offsetHeight ?? 0);
+    }, []);
 
     return (
-        <DataEditor
-            {...defaultProps}
-            rowMarkers="number"
-            getCellContent={getCellContent}
-            experimental={{ strict: true }}
-            columns={cols}
-            rows={10_000}
-        />
+        <div
+            style={{
+                background: "red",
+                overflow: "auto",
+                height: "80vh",
+            }}
+            ref={scrollerRef}>
+            <style>{`
+            .hackygrid {
+                position: sticky;
+                top: 0;
+            }
+            .dvn-scroller {
+                overflow: hidden !important;
+            }
+                `}</style>
+            <header ref={headerRef}>
+                <h1
+                    contentEditable
+                    style={{ margin: 0 }}
+                    onInput={() => {
+                        setScrollOffsetTop(headerRef.current?.offsetHeight ?? 0);
+                    }}>
+                    This is the article title
+                </h1>
+                <div style={{ margin: 0 }}>something something nav</div>
+            </header>
+            <div
+                style={{
+                    height: `${(rowCount + 1) * 33.5}px`,
+                }}>
+                <DataEditor
+                    {...defaultProps}
+                    height={"80vh"}
+                    rowMarkers="number"
+                    className="hackygrid"
+                    getCellContent={getCellContent}
+                    experimental={{ strict: true }}
+                    columns={cols}
+                    rows={rowCount}
+                    scrollerRef={scrollerRef}
+                    scrollOffsetTop={scrollOffsetTop}
+                />
+            </div>
+        </div>
     );
 };
 (AddColumns as any).args = {

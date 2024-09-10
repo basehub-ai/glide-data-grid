@@ -67,6 +67,8 @@ export interface ScrollingDataGridProps extends Props {
     readonly rightElement: React.ReactNode | undefined;
     readonly clientSize: readonly [number, number, number]; // [width, height, rightElSize]
     readonly nonGrowWidth: number;
+    readonly scrollerRef?: React.RefObject<HTMLDivElement>;
+    readonly scrollOffsetTop?: number;
 }
 
 const GridScroller: React.FunctionComponent<ScrollingDataGridProps> = p => {
@@ -93,6 +95,7 @@ const GridScroller: React.FunctionComponent<ScrollingDataGridProps> = p => {
         smoothScrollX = false,
         smoothScrollY = false,
         isDraggable,
+        scrollerRef,
     } = p;
     const { paddingRight, paddingBottom } = experimental ?? {};
 
@@ -261,7 +264,9 @@ const GridScroller: React.FunctionComponent<ScrollingDataGridProps> = p => {
             paddingRight={paddingRight}
             rightElementProps={rightElementProps}
             update={onScrollUpdate}
-            initialSize={initialSize}>
+            initialSize={initialSize}
+            scrollerRef={scrollerRef}
+            scrollOffsetTop={p.scrollOffsetTop}>
             <DataGridDnd
                 eventTargetRef={scrollRef}
                 width={clientWidth}

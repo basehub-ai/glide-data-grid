@@ -24,6 +24,8 @@ interface Props {
     readonly kineticScrollPerfHack?: boolean;
     readonly scrollRef?: React.MutableRefObject<HTMLDivElement | null>;
     readonly update: (region: Rectangle & { paddingRight: number }) => void;
+    readonly scrollerRef?: React.RefObject<HTMLDivElement>;
+    readonly scrollOffsetTop?: number;
 }
 
 const ScrollRegionStyle = styled.div<{ isSafari: boolean }>`
@@ -124,6 +126,8 @@ export const InfiniteScroller: React.FC<Props> = p => {
         kineticScrollPerfHack = false,
         scrollRef,
         initialSize,
+        scrollerRef: explicitScrollerRef,
+        scrollOffsetTop,
     } = p;
     const padders: React.ReactNode[] = [];
 
@@ -132,7 +136,7 @@ export const InfiniteScroller: React.FC<Props> = p => {
 
     const offsetY = React.useRef(0);
     const lastScrollY = React.useRef(0);
-    const scroller = React.useRef<HTMLDivElement | null>(null);
+    const scroller = React.useRef<HTMLDivElement | null>(explicitScrollerRef?.current ?? null);
 
     const dpr = typeof window === "undefined" ? 1 : window.devicePixelRatio;
 
@@ -173,6 +177,12 @@ export const InfiniteScroller: React.FC<Props> = p => {
 
             const dx = scrollLeft - lastScrollLeft;
             const dy = scrollTop - lastScrollTop;
+
+            const stickyTop = scrollOffsetTop ?? 0;
+
+            if (stickyTop) {
+                scrollTop = Math.max(0, scrollTop - stickyTop);
+            }
 
             if (
                 hasTouches &&
@@ -225,7 +235,7 @@ export const InfiniteScroller: React.FC<Props> = p => {
                 paddingRight: rightWrapRef.current?.clientWidth ?? 0,
             });
         },
-        [paddingBottom, paddingRight, scrollHeight, update, preventDiagonalScrolling, hasTouches]
+        [paddingBottom, paddingRight, scrollHeight, update, preventDiagonalScrolling, hasTouches, scrollOffsetTop]
     );
 
     useKineticScroll(kineticScrollPerfHack && browserIsSafari.value, onScroll, scroller);
@@ -244,13 +254,14 @@ export const InfiniteScroller: React.FC<Props> = p => {
     }, [onScroll, paddingBottom, paddingRight]);
 
     const setRefs = React.useCallback(
-        (instance: HTMLDivElement | null) => {
+        (_instance: HTMLDivElement | null) => {
+            const instance = explicitScrollerRef?.current ?? _instance;
             scroller.current = instance;
             if (scrollRef !== undefined) {
                 scrollRef.current = instance;
             }
         },
-        [scrollRef]
+        [scrollRef, explicitScrollerRef]
     );
 
     let key = 0;
@@ -263,6 +274,20 @@ export const InfiniteScroller: React.FC<Props> = p => {
     }
 
     const { ref, width, height } = useResizeDetector<HTMLDivElement>(initialSize);
+
+    React.useEffect(() => {
+        const el = scroller.current;
+        if (!el) return;
+
+        const _onScroll = () => {
+            onScroll();
+        };
+
+        el.addEventListener("scroll", _onScroll);
+        return () => {
+            el.removeEventListener("scroll", _onScroll);
+        };
+    }, [onScroll]);
 
     if (typeof window !== "undefined" && (lastProps.current?.height !== height || lastProps.current?.width !== width)) {
         window.setTimeout(() => onScrollRef.current(), 0);
@@ -285,8 +310,7 @@ export const InfiniteScroller: React.FC<Props> = p => {
                             e.preventDefault();
                         }
                     }}
-                    className={"dvn-scroller " + (className ?? "")}
-                    onScroll={() => onScroll()}>
+                    className={"dvn-scroller " + (className ?? "")}>
                     <div className={"dvn-scroll-inner" + (rightElement === undefined ? " dvn-hidden" : "")}>
                         <div className="dvn-stack">{padders}</div>
                         {rightElement !== undefined && (

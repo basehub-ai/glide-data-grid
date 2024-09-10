@@ -86,6 +86,7 @@ export interface DataGridSearchProps extends Omit<ScrollingDataGridProps, "preli
      */
     readonly onSearchValueChange?: (newVal: string) => void;
     readonly searchInputRef: React.MutableRefObject<HTMLInputElement | null>;
+    readonly scrollerRef?: React.RefObject<HTMLDivElement>;
 }
 
 const targetSearchTimeMS = 10;
@@ -546,6 +547,8 @@ const DataGridSearch: React.FunctionComponent<DataGridSearchProps> = p => {
                 smoothScrollX={p.smoothScrollX}
                 smoothScrollY={p.smoothScrollY}
                 resizeIndicator={p.resizeIndicator}
+                scrollerRef={p.scrollerRef}
+                scrollOffsetTop={p.scrollOffsetTop}
             />
             {searchbox}
         </>

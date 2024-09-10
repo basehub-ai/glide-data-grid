@@ -25,6 +25,8 @@ const DataEditorAllImpl: React.ForwardRefRenderFunction<DataEditorRef, DataEdito
             headerIcons={allSprites}
             ref={ref}
             imageWindowLoader={imageWindowLoader}
+            scrollerRef={p.scrollerRef}
+            scrollOffsetTop={p.scrollOffsetTop}
         />
     );
 };
