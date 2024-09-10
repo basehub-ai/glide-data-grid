@@ -1,3 +1,5 @@
+Fork of the Glide Data Grid with some custom changes, specific to BaseHub.
+
 <h1 align="center">
   <img src="https://raw.githubusercontent.com/glideapps/glide-data-grid/master/media/icon.png" width="224px"/><br/>
   <b>Glide Data Grid</b>
