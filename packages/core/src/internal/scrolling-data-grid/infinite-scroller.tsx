@@ -26,6 +26,7 @@ interface Props {
     readonly update: (region: Rectangle & { paddingRight: number }) => void;
     readonly scrollerRef?: React.RefObject<HTMLDivElement>;
     readonly scrollOffsetTop?: number;
+    readonly scrollOffsetBottom?: number;
 }
 
 const ScrollRegionStyle = styled.div<{ isSafari: boolean }>`
@@ -128,6 +129,7 @@ export const InfiniteScroller: React.FC<Props> = p => {
         initialSize,
         scrollerRef: explicitScrollerRef,
         scrollOffsetTop,
+        scrollOffsetBottom,
     } = p;
     const padders: React.ReactNode[] = [];
 
@@ -179,9 +181,17 @@ export const InfiniteScroller: React.FC<Props> = p => {
             const dy = scrollTop - lastScrollTop;
 
             const stickyTop = scrollOffsetTop ?? 0;
+            const stickyBottom = scrollOffsetBottom ?? 0;
 
             if (stickyTop) {
                 scrollTop = Math.max(0, scrollTop - stickyTop);
+            }
+
+            if (stickyBottom) {
+                const scrollRemaining = el.scrollHeight - scrollTop - el.clientHeight - stickyTop;
+                if (scrollRemaining < stickyBottom) {
+                    scrollTop = el.scrollHeight - stickyTop - el.clientHeight - stickyBottom;
+                }
             }
 
             if (
@@ -235,7 +245,16 @@ export const InfiniteScroller: React.FC<Props> = p => {
                 paddingRight: rightWrapRef.current?.clientWidth ?? 0,
             });
         },
-        [paddingBottom, paddingRight, scrollHeight, update, preventDiagonalScrolling, hasTouches, scrollOffsetTop]
+        [
+            scrollOffsetTop,
+            scrollOffsetBottom,
+            hasTouches,
+            preventDiagonalScrolling,
+            scrollHeight,
+            update,
+            paddingRight,
+            paddingBottom,
+        ]
     );
 
     useKineticScroll(kineticScrollPerfHack && browserIsSafari.value, onScroll, scroller);
@@ -258,7 +277,7 @@ export const InfiniteScroller: React.FC<Props> = p => {
             const instance = explicitScrollerRef?.current ?? _instance;
             scroller.current = instance;
             if (scrollRef !== undefined) {
-                scrollRef.current = instance;
+                scrollRef.current = _instance;
             }
         },
         [scrollRef, explicitScrollerRef]

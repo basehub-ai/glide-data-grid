@@ -4023,6 +4023,7 @@ const DataEditorImpl: React.ForwardRefRenderFunction<DataEditorRef, DataEditorPr
                 <DataGridSearch
                     scrollerRef={p.scrollerRef}
                     scrollOffsetTop={p.scrollOffsetTop}
+                    scrollOffsetBottom={p.scrollOffsetBottom}
                     fillHandle={fillHandle}
                     drawFocusRing={drawFocusRing}
                     experimental={experimental}

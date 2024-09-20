@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 import { DataEditorAll as DataEditor } from "../../data-editor-all.js";
 import {
     BeautifulWrapper,
@@ -34,53 +34,55 @@ interface AddColumnsProps {
     columnsCount: number;
 }
 
-const rowCount = 10_000;
+const rowCount = 150;
 
 export const AddColumns: React.FC<AddColumnsProps> = p => {
     const { cols, getCellContent } = useMockDataGenerator(p.columnsCount);
     const scrollerRef = useRef<HTMLDivElement>(null);
-    const [scrollOffsetTop, setScrollOffsetTop] = useState(0);
     const headerRef = useRef<HTMLElement>(null);
 
-    useEffect(() => {
-        setScrollOffsetTop(headerRef.current?.offsetHeight ?? 0);
-    }, []);
+    const offsetBottom = 150;
+    const height = "500px";
+    const rowHeight = 32;
 
     return (
         <div
             style={{
                 background: "red",
                 overflow: "auto",
-                height: "80vh",
+                height,
             }}
             ref={scrollerRef}>
             <style>{`
             .hackygrid {
                 position: sticky;
                 top: 0;
+                height: ${height} !important;
             }
             .dvn-scroller {
                 overflow: hidden !important;
             }
+                .sizer, .sizer-clip, .sizer-clip > div {
+                height: ${height} !important;
+                max-height: ${height} !important;
+                }
                 `}</style>
             <header ref={headerRef}>
-                <h1
-                    contentEditable
-                    style={{ margin: 0 }}
-                    onInput={() => {
-                        setScrollOffsetTop(headerRef.current?.offsetHeight ?? 0);
-                    }}>
+                <h1 contentEditable style={{ margin: 0 }}>
                     This is the article title
                 </h1>
                 <div style={{ margin: 0 }}>something something nav</div>
             </header>
             <div
                 style={{
-                    height: `${(rowCount + 1) * 33.5}px`,
+                    height: `${(rowCount + 1) * rowHeight + offsetBottom}px`,
+                    paddingBottom: offsetBottom,
                 }}>
                 <DataEditor
                     {...defaultProps}
-                    height={"80vh"}
+                    rowHeight={rowHeight}
+                    headerHeight={rowHeight}
+                    height={"500px"}
                     rowMarkers="number"
                     className="hackygrid"
                     getCellContent={getCellContent}
@@ -88,7 +90,8 @@ export const AddColumns: React.FC<AddColumnsProps> = p => {
                     columns={cols}
                     rows={rowCount}
                     scrollerRef={scrollerRef}
-                    scrollOffsetTop={scrollOffsetTop}
+                    scrollOffsetTop={55.5}
+                    scrollOffsetBottom={offsetBottom}
                 />
             </div>
         </div>
