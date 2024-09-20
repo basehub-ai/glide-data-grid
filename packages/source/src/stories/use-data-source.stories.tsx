@@ -8,7 +8,7 @@ import {
     GridCellKind,
     type GridColumn,
     type Theme,
-} from "@glideapps/glide-data-grid";
+} from "@basehub/glide-data-grid";
 import { faker } from "@faker-js/faker";
 import { useCollapsingGroups, useColumnSort, useMoveableColumns } from "../index.js";
 import { useUndoRedo } from "../use-undo-redo.js";

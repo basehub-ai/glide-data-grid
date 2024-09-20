@@ -8,7 +8,7 @@ import {
     GridCellKind,
     type Item,
     type Rectangle,
-} from "@glideapps/glide-data-grid";
+} from "@basehub/glide-data-grid";
 import range from "lodash/range.js";
 import chunk from "lodash/chunk.js";
 import React from "react";

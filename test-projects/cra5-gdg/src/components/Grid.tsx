@@ -1,5 +1,5 @@
 import * as React from "react";
-import DataEditor, { DataEditorProps, GridCellKind, GridColumn } from "@glideapps/glide-data-grid";
+import DataEditor, { DataEditorProps, GridCellKind, GridColumn } from "@basehub/glide-data-grid";
 import "@glideapps/glide-data-grid/dist/index.css";
 
 export default function Grid() {

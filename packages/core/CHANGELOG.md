@@ -81,7 +81,7 @@ All variables except `lineHeight` are available in this manner. The full list in
 The theme can be accessed in JS by using the new `useTheme` hook:
 
 ```tsx
-import { useTheme } from "@glideapps/glide-data-grid";
+import { useTheme } from "@basehub/glide-data-grid";
 
 const MyComponent: React.VFC = () => {
     const dataGridTheme = useTheme();

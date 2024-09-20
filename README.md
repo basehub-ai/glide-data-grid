@@ -186,7 +186,7 @@ grid.tsx
 
 ```tsx
 import React from "react";
-import DataEditor from "@glideapps/glide-data-grid";
+import DataEditor from "@basehub/glide-data-grid";
 
 export default function Grid() {
     return <DataEditor {...args} />;

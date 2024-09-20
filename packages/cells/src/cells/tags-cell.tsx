@@ -5,7 +5,7 @@ import {
     type CustomRenderer,
     getMiddleCenterBias,
     GridCellKind,
-} from "@glideapps/glide-data-grid";
+} from "@basehub/glide-data-grid";
 import { styled } from "@linaria/react";
 import * as React from "react";
 import { roundedRect } from "../draw-fns.js";

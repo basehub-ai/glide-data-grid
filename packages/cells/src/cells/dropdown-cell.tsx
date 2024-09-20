@@ -11,7 +11,7 @@ import {
     useTheme,
     GridCellKind,
     TextCellEntry,
-} from "@glideapps/glide-data-grid";
+} from "@basehub/glide-data-grid";
 
 interface CustomMenuProps extends MenuProps<any> {}
 

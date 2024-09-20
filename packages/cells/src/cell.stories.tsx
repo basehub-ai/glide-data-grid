@@ -1,6 +1,6 @@
 import { styled } from "@linaria/react";
 import * as React from "react";
-import { DataEditor, type DataEditorProps, GridCellKind } from "@glideapps/glide-data-grid";
+import { DataEditor, type DataEditorProps, GridCellKind } from "@basehub/glide-data-grid";
 import { DropdownCell as DropdownRenderer, MultiSelectCell as MultiSelectRenderer, allCells } from "./index.js";
 import type { StarCell } from "./cells/star-cell.js";
 import type { SparklineCell } from "./cells/sparkline-cell.js";

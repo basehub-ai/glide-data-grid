@@ -1,4 +1,4 @@
-import type { ProvideEditorComponent } from "@glideapps/glide-data-grid";
+import type { ProvideEditorComponent } from "@basehub/glide-data-grid";
 import * as React from "react";
 import { Editor, Viewer } from "@toast-ui/react-editor";
 import { styled } from "@linaria/react";
