@@ -42,7 +42,7 @@
         "canvas"
     ],
     "dependencies": {
-        "@glideapps/glide-data-grid": "6.0.4-alpha8"
+        "@basehub/glide-data-grid": "6.0.4-alpha10"
     },
     "peerDependencies": {
         "lodash": "^4.17.19",
