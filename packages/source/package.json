@@ -43,7 +43,7 @@
     ],
     "dependencies": {
         "@basehub/glide-data-grid": "6.0.4-alpha10",
-        "@glideapps/glide-data-grid": "6.0.4-alpha11"
+        "@glideapps/glide-data-grid": "6.0.4-alpha8"
     },
     "peerDependencies": {
         "lodash": "^4.17.19",
