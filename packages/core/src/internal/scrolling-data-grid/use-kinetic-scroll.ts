@@ -3,7 +3,13 @@ import { useEffect, useRef } from "react";
 const useKineticScroll = (
     isEnabled: boolean,
     callback: (scrollLeft: number, scrollTop: number) => void,
-    targetScroller: React.MutableRefObject<HTMLDivElement | null>
+    {
+        scrollerX,
+        scrollerY,
+    }: {
+        scrollerY: React.MutableRefObject<HTMLDivElement | null>;
+        scrollerX: React.MutableRefObject<HTMLDivElement | null>;
+    }
 ) => {
     const rafId = useRef<number | null>(null);
     const isTouching = useRef<boolean | null>(null);
@@ -13,12 +19,13 @@ const useKineticScroll = (
     const callbackRef = useRef(callback);
     callbackRef.current = callback;
 
-    const scrollEl = targetScroller.current;
+    const scrollXEl = scrollerX.current;
+    const scrollYEl = scrollerY.current;
 
     useEffect(() => {
         const handleScroll = () => {
-            if (isTouching.current === false && scrollEl !== null) {
-                const currentScrollPosition = [scrollEl.scrollLeft, scrollEl.scrollTop] as const;
+            if (isTouching.current === false && scrollXEl !== null && scrollYEl !== null) {
+                const currentScrollPosition = [scrollXEl.scrollLeft, scrollYEl.scrollTop] as const;
                 if (
                     lastScrollPosition.current?.[0] === currentScrollPosition[0] &&
                     lastScrollPosition.current?.[1] === currentScrollPosition[1]
@@ -59,20 +66,25 @@ const useKineticScroll = (
             }
         };
 
-        if (isEnabled && scrollEl !== null) {
-            const element = scrollEl;
-            element.addEventListener("touchstart", startTouch);
-            element.addEventListener("touchend", endTouch);
+        if (isEnabled && scrollXEl !== null && scrollYEl !== null) {
+            const elementX = scrollXEl;
+            const elementY = scrollYEl;
+            elementX.addEventListener("touchstart", startTouch);
+            elementX.addEventListener("touchend", endTouch);
+            elementY.addEventListener("touchstart", startTouch);
+            elementY.addEventListener("touchend", endTouch);
 
             return () => {
-                element.removeEventListener("touchstart", startTouch);
-                element.removeEventListener("touchend", endTouch);
+                elementX.removeEventListener("touchstart", startTouch);
+                elementX.removeEventListener("touchend", endTouch);
+                elementY.removeEventListener("touchstart", startTouch);
+                elementY.removeEventListener("touchend", endTouch);
                 if (rafId.current !== null) {
                     window.clearTimeout(rafId.current);
                 }
             };
         }
-    }, [isEnabled, scrollEl]);
+    }, [isEnabled, scrollXEl, scrollYEl]);
 };
 
 export default useKineticScroll;

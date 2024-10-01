@@ -24,7 +24,8 @@ interface Props {
     readonly kineticScrollPerfHack?: boolean;
     readonly scrollRef?: React.MutableRefObject<HTMLDivElement | null>;
     readonly update: (region: Rectangle & { paddingRight: number }) => void;
-    readonly scrollerRef?: React.RefObject<HTMLDivElement>;
+    readonly scrollerXRef?: React.RefObject<HTMLDivElement>;
+    readonly scrollerYRef?: React.RefObject<HTMLDivElement>;
     readonly scrollOffsetTop?: number;
     readonly scrollOffsetBottom?: number;
 }
@@ -127,7 +128,8 @@ export const InfiniteScroller: React.FC<Props> = p => {
         kineticScrollPerfHack = false,
         scrollRef,
         initialSize,
-        scrollerRef: explicitScrollerRef,
+        scrollerXRef: explicitScrollerXRef,
+        scrollerYRef: explicitScrollerYRef,
         scrollOffsetTop,
         scrollOffsetBottom,
     } = p;
@@ -138,7 +140,8 @@ export const InfiniteScroller: React.FC<Props> = p => {
 
     const offsetY = React.useRef(0);
     const lastScrollY = React.useRef(0);
-    const scroller = React.useRef<HTMLDivElement | null>(explicitScrollerRef?.current ?? null);
+    const scrollerX = React.useRef<HTMLDivElement | null>(explicitScrollerXRef?.current ?? null);
+    const scrollerY = React.useRef<HTMLDivElement | null>(explicitScrollerYRef?.current ?? null);
 
     const dpr = typeof window === "undefined" ? 1 : window.devicePixelRatio;
 
@@ -156,24 +159,28 @@ export const InfiniteScroller: React.FC<Props> = p => {
 
     React.useLayoutEffect(() => {
         if (!isIdle || hasTouches || lastScrollPosition.current.lockDirection === undefined) return;
-        const el = scroller.current;
-        if (el === null) return;
+        const elX = scrollerX.current;
+        const elY = scrollerY.current;
+        if (elX === null) return;
+        if (elY === null) return;
         const [lx, ly] = lastScrollPosition.current.lockDirection;
         if (lx !== undefined) {
-            el.scrollLeft = lx;
+            elX.scrollLeft = lx;
         } else if (ly !== undefined) {
-            el.scrollTop = ly;
+            elY.scrollTop = ly;
         }
         lastScrollPosition.current.lockDirection = undefined;
     }, [hasTouches, isIdle]);
 
     const onScroll = React.useCallback(
         (scrollLeft?: number, scrollTop?: number) => {
-            const el = scroller.current;
-            if (el === null) return;
+            const elY = scrollerY.current;
+            const elX = scrollerX.current;
 
-            scrollTop = scrollTop ?? el.scrollTop;
-            scrollLeft = scrollLeft ?? el.scrollLeft;
+            if (!elY || !elX) return;
+
+            scrollTop = scrollTop ?? elY?.scrollTop ?? 0;
+            scrollLeft = scrollLeft ?? elX?.scrollLeft ?? 0;
             const lastScrollTop = lastScrollPosition.current.scrollTop;
             const lastScrollLeft = lastScrollPosition.current.scrollLeft;
 
@@ -188,9 +195,9 @@ export const InfiniteScroller: React.FC<Props> = p => {
             }
 
             if (stickyBottom) {
-                const scrollRemaining = el.scrollHeight - scrollTop - el.clientHeight - stickyTop;
+                const scrollRemaining = elY.scrollHeight - scrollTop - elY.clientHeight - stickyTop;
                 if (scrollRemaining < stickyBottom) {
-                    scrollTop = el.scrollHeight - stickyTop - el.clientHeight - stickyBottom;
+                    scrollTop = elY.scrollHeight - stickyTop - elY.clientHeight - stickyBottom;
                 }
             }
 
@@ -213,18 +220,18 @@ export const InfiniteScroller: React.FC<Props> = p => {
             lastScrollPosition.current.scrollLeft = scrollLeft;
             lastScrollPosition.current.scrollTop = scrollTop;
 
-            const cWidth = el.clientWidth;
-            const cHeight = el.clientHeight;
+            const cWidth = elX.clientWidth;
+            const cHeight = elY.clientHeight;
 
             const newY = scrollTop;
             const delta = lastScrollY.current - newY;
-            const scrollableHeight = el.scrollHeight - cHeight;
+            const scrollableHeight = elY.scrollHeight - cHeight;
             lastScrollY.current = newY;
 
             if (
                 scrollableHeight > 0 &&
                 (Math.abs(delta) > 2000 || newY === 0 || newY === scrollableHeight) &&
-                scrollHeight > el.scrollHeight + 5
+                scrollHeight > elY.scrollHeight + 5
             ) {
                 const prog = newY / scrollableHeight;
                 const recomputed = (scrollHeight - cHeight) * prog;
@@ -257,7 +264,7 @@ export const InfiniteScroller: React.FC<Props> = p => {
         ]
     );
 
-    useKineticScroll(kineticScrollPerfHack && browserIsSafari.value, onScroll, scroller);
+    useKineticScroll(kineticScrollPerfHack && browserIsSafari.value, onScroll, { scrollerX, scrollerY });
 
     const onScrollRef = React.useRef(onScroll);
     onScrollRef.current = onScroll;
@@ -274,13 +281,15 @@ export const InfiniteScroller: React.FC<Props> = p => {
 
     const setRefs = React.useCallback(
         (_instance: HTMLDivElement | null) => {
-            const instance = explicitScrollerRef?.current ?? _instance;
-            scroller.current = instance;
+            const instanceOfSrollerX = explicitScrollerXRef?.current ?? _instance;
+            const instanceOfSrollerY = explicitScrollerYRef?.current ?? _instance;
+            scrollerX.current = instanceOfSrollerX;
+            scrollerY.current = instanceOfSrollerY;
             if (scrollRef !== undefined) {
                 scrollRef.current = _instance;
             }
         },
-        [scrollRef, explicitScrollerRef]
+        [scrollRef, explicitScrollerXRef, explicitScrollerYRef]
     );
 
     let key = 0;
@@ -295,16 +304,20 @@ export const InfiniteScroller: React.FC<Props> = p => {
     const { ref, width, height } = useResizeDetector<HTMLDivElement>(initialSize);
 
     React.useEffect(() => {
-        const el = scroller.current;
-        if (!el) return;
+        const elX = scrollerX.current;
+        const elY = scrollerY.current;
+        if (!elX) return;
+        if (!elY) return;
 
         const _onScroll = () => {
             onScroll();
         };
 
-        el.addEventListener("scroll", _onScroll);
+        elX.addEventListener("scroll", _onScroll);
+        elY.addEventListener("scroll", _onScroll);
         return () => {
-            el.removeEventListener("scroll", _onScroll);
+            elX.removeEventListener("scroll", _onScroll);
+            elY.removeEventListener("scroll", _onScroll);
         };
     }, [onScroll]);
 
@@ -346,7 +359,7 @@ export const InfiniteScroller: React.FC<Props> = p => {
                                         marginBottom: -40,
                                         marginRight: paddingRight,
                                         flexGrow: rightElementFill ? 1 : undefined,
-                                        right: rightElementSticky ? paddingRight ?? 0 : undefined,
+                                        right: rightElementSticky ? (paddingRight ?? 0) : undefined,
                                         pointerEvents: "auto",
                                     }}>
                                     {rightElement}

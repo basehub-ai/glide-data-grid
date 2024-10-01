@@ -202,7 +202,7 @@ function shiftSelection(input: GridSelection, offset: number): GridSelection {
  */
 export interface DataEditorProps
     extends Props,
-        Pick<DataGridSearchProps, "imageWindowLoader" | "scrollOffsetTop" | "scrollerRef"> {
+        Pick<DataGridSearchProps, "imageWindowLoader" | "scrollOffsetTop" | "scrollerYRef" | "scrollerXRef"> {
     /** Emitted whenever the user has requested the deletion of the selection.
      * @group Editing
      */
@@ -1293,7 +1293,7 @@ const DataEditorImpl: React.ForwardRefRenderFunction<DataEditorRef, DataEditorPr
                 //If the grid is empty, we will return text
                 const isFirst = col === rowMarkerOffset;
 
-                const maybeFirstColumnHint = isFirst ? trailingRowOptions?.hint ?? "" : "";
+                const maybeFirstColumnHint = isFirst ? (trailingRowOptions?.hint ?? "") : "";
                 const c = mangledColsRef.current[col];
 
                 if (c?.trailingRowOptions?.disabled === true) {
@@ -3418,7 +3418,7 @@ const DataEditorImpl: React.ForwardRefRenderFunction<DataEditorRef, DataEditorPr
                 formatted?: string | string[]
             ): EditListItem | undefined {
                 const stringifiedRawValue =
-                    typeof rawValue === "object" ? rawValue?.join("\n") ?? "" : rawValue?.toString() ?? "";
+                    typeof rawValue === "object" ? (rawValue?.join("\n") ?? "") : (rawValue?.toString() ?? "");
 
                 if (!isInnerOnlyCell(inner) && isReadWriteCell(inner) && inner.readonly !== true) {
                     const coerced = coercePasteValue?.(stringifiedRawValue, inner);
@@ -3796,7 +3796,7 @@ const DataEditorImpl: React.ForwardRefRenderFunction<DataEditorRef, DataEditorPr
         (col: number) => {
             return typeof verticalBorder === "boolean"
                 ? verticalBorder
-                : verticalBorder?.(col - rowMarkerOffset) ?? true;
+                : (verticalBorder?.(col - rowMarkerOffset) ?? true);
         },
         [rowMarkerOffset, verticalBorder]
     );
@@ -4021,7 +4021,8 @@ const DataEditorImpl: React.ForwardRefRenderFunction<DataEditorRef, DataEditorPr
                 inWidth={width ?? idealWidth}
                 inHeight={height ?? idealHeight}>
                 <DataGridSearch
-                    scrollerRef={p.scrollerRef}
+                    scrollerXRef={p.scrollerXRef}
+                    scrollerYRef={p.scrollerYRef}
                     scrollOffsetTop={p.scrollOffsetTop}
                     scrollOffsetBottom={p.scrollOffsetBottom}
                     fillHandle={fillHandle}
