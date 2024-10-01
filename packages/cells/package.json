@@ -54,8 +54,7 @@
         "@linaria/react": "^4.5.3",
         "@toast-ui/editor": "3.1.10",
         "@toast-ui/react-editor": "3.1.10",
-        "react-select": "^5.8.0",
-        "@glideapps/glide-data-grid": "6.0.4-alpha11"
+        "react-select": "^5.8.0"
     },
     "devDependencies": {
         "@babel/cli": "^7.16.0",
