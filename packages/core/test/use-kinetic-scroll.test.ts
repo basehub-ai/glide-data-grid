@@ -23,9 +23,13 @@ describe("useKineticScroll", () => {
     });
 
     it("registers and unregisters event listeners based on isEnabled", () => {
-        const { rerender } = renderHook(({ isEnabled }) => useKineticScroll(isEnabled, callback, targetScroller), {
-            initialProps: { isEnabled: false },
-        });
+        const { rerender } = renderHook(
+            ({ isEnabled }) =>
+                useKineticScroll(isEnabled, callback, { scrollerX: targetScroller, scrollerY: targetScroller }),
+            {
+                initialProps: { isEnabled: false },
+            }
+        );
 
         expect(targetScroller.current.addEventListener).not.toHaveBeenCalled();
         expect(targetScroller.current.removeEventListener).not.toHaveBeenCalled();
@@ -41,7 +45,7 @@ describe("useKineticScroll", () => {
     });
 
     it("handles scroll events and triggers callback", () => {
-        renderHook(() => useKineticScroll(true, callback, targetScroller));
+        renderHook(() => useKineticScroll(true, callback, { scrollerX: targetScroller, scrollerY: targetScroller }));
 
         act(() => {
             targetScroller.current.dispatchEvent(new Event("touchstart"));
