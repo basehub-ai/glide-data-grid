@@ -36,12 +36,12 @@ describe("useKineticScroll", () => {
 
         rerender({ isEnabled: true });
 
-        expect(targetScroller.current.addEventListener).toHaveBeenCalledTimes(2);
+        expect(targetScroller.current.addEventListener).toHaveBeenCalledTimes(4);
         expect(targetScroller.current.removeEventListener).not.toHaveBeenCalled();
 
         rerender({ isEnabled: false });
 
-        expect(targetScroller.current.removeEventListener).toHaveBeenCalledTimes(2);
+        expect(targetScroller.current.removeEventListener).toHaveBeenCalledTimes(4);
     });
 
     it("handles scroll events and triggers callback", () => {
